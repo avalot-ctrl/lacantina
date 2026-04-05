@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#541A24"/>
+  <!-- Rays -->
+  <g transform="translate(32,28)">
+    <line x1="0" y1="-22" x2="0" y2="-26" stroke="#FFAB03" stroke-width="1.5"/>
+    <line x1="15" y1="-16" x2="18" y2="-19" stroke="#FFAB03" stroke-width="1.5"/>
+    <line x1="22" y1="0" x2="26" y2="0" stroke="#FFAB03" stroke-width="1.5"/>
+    <line x1="15" y1="16" x2="18" y2="19" stroke="#FFAB03" stroke-width="1.5"/>
+    <line x1="-15" y1="-16" x2="-18" y2="-19" stroke="#FFAB03" stroke-width="1.5"/>
+    <line x1="-22" y1="0" x2="-26" y2="0" stroke="#FFAB03" stroke-width="1.5"/>
+    <line x1="-15" y1="16" x2="-18" y2="19" stroke="#FFAB03" stroke-width="1.5"/>
+    <!-- Heart -->
+    <path d="M0 16 C0 16 -14 8 -14 0 C-14 -6 -9 -10 -5 -10 C-2 -10 0 -7 0 -6 C0 -7 2 -10 5 -10 C9 -10 14 -6 14 0 C14 8 0 16 0 16Z" fill="#F07E2C"/>
+    <!-- Flame -->
+    <path d="M0 -10 C-2 -15 -1 -20 0 -22 C1 -20 2 -15 0 -10Z" fill="none" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M-4 -11 C-6 -15 -4 -19 -2 -21 C-1 -17 -2 -13 -4 -11Z" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"/>
+    <path d="M4 -11 C6 -15 4 -19 2 -21 C1 -17 2 -13 4 -11Z" fill="none" stroke="white" stroke-width="1" stroke-linecap="round"/>
+  </g>
+</svg>
