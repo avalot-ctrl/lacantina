@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import LogoCantina from '@/components/svg/LogoCantina'
 
 const navLinks = [
   { href: '/', label: 'Accueil' },
@@ -51,7 +51,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 hover:opacity-90 transition-opacity">
-              <LogoCantina variant="white" width={160} />
+              <Image src="/logo.png" alt="La Cantina — Brasserie Latina" width={160} height={80} style={{ filter: 'invert(1)', mixBlendMode: 'screen' }} />
             </Link>
 
             {/* Desktop Navigation */}

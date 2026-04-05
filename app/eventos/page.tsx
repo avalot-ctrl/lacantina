@@ -395,7 +395,7 @@ export default function EventosPage() {
 
             {/* Quick info */}
             <div className="flex flex-wrap justify-center gap-6 mt-2 text-white/50 font-futura text-xs">
-              <span>📍 42 Rue Georges Clemenceau, La Roche-sur-Yon</span>
+              <span>📍 83 rue François Cévert, La Roche-sur-Yon</span>
               <span>📞 02 51 XX XX XX</span>
             </div>
           </AnimatedSection>

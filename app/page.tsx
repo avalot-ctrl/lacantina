@@ -1,1020 +1,586 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 import PapelPicado, { PapelPicadoInverted } from '@/components/svg/PapelPicado'
-import MilagroHeart from '@/components/svg/MilagroHeart'
 import Cactus from '@/components/svg/Cactus'
 import { ChiliRow } from '@/components/svg/Chili'
-import Sun, { SunDivider } from '@/components/svg/Sun'
-import LogoCantina from '@/components/svg/LogoCantina'
+import Calavera from '@/components/svg/Calavera'
+import { SunDivider } from '@/components/svg/Sun'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import SectionTitle from '@/components/ui/SectionTitle'
-import Button from '@/components/ui/Button'
-import {
-  FaInstagram,
-  FaFacebookF,
-  FaTiktok,
-  FaMapMarkerAlt,
-  FaPhone,
-  FaEnvelope,
-  FaChevronDown,
-  FaClock,
-} from 'react-icons/fa'
+import { FaInstagram, FaFacebookF, FaTiktok, FaMapMarkerAlt, FaPhone, FaChevronDown } from 'react-icons/fa'
 
-// ─── Specialités data ────────────────────────────────────────────────────────
+/* ─────────────── DATA ─────────────── */
 
 const specialites = [
-  {
-    bg: '#FF461C',
-    emoji: '🌮',
-    name: 'Tacos & Burritos',
-    desc: 'Tortillas croustillantes, garnitures généreuses',
-    shadow: 'rgba(255,70,28,0.5)',
-  },
-  {
-    bg: '#844999',
-    emoji: '🥩',
-    name: 'Viandes Grillées',
-    desc: 'Picanha, onglet, brochettes flambées',
-    shadow: 'rgba(132,73,153,0.5)',
-  },
-  {
-    bg: '#FFAB03',
-    emoji: '🧀',
-    name: 'Nachos & Partage',
-    desc: 'Plateaux XXL pour partager entre amis',
-    shadow: 'rgba(255,171,3,0.5)',
-  },
-  {
-    bg: '#4280C7',
-    emoji: '🍕',
-    name: 'Pizzas Latina',
-    desc: 'Nos pizzas aux saveurs tex-mex',
-    shadow: 'rgba(66,128,199,0.5)',
-  },
-  {
-    bg: '#19A95B',
-    emoji: '🍹',
-    name: 'Cocktails & Margaritas',
-    desc: 'Margaritas, mojitos, cocktails maison',
-    shadow: 'rgba(25,169,91,0.5)',
-  },
-  {
-    bg: '#F23376',
-    emoji: '🍮',
-    name: 'Desserts & Glaces',
-    desc: 'Churros, dulce de leche, maracuja',
-    shadow: 'rgba(242,51,118,0.5)',
-  },
+  { bg: '#FF461C', emoji: '🌮', name: 'Tacos & Burritos',       desc: 'Tortillas croustillantes, garnitures généreuses, sauces maison', from: '13,90€' },
+  { bg: '#844999', emoji: '🥩', name: 'Viandes Grillées',        desc: 'Picanha, onglet chimichurri, brochettes flambées',               from: '16,90€' },
+  { bg: '#FFAB03', emoji: '🧀', name: 'Nachos & Partage',        desc: 'Plateaux XXL pour partager entre amigos',                        from: '9,90€'  },
+  { bg: '#4280C7', emoji: '🍕', name: 'Pizzas Latina',           desc: 'Chorizo inferno, Guacamolita, Tres Quesos…',                     from: '11,90€' },
+  { bg: '#19A95B', emoji: '🍹', name: 'Cocktails & Margaritas',  desc: 'Margaritas, mojitos, sangrias, cocktails maison',                from: '8€'     },
+  { bg: '#F23376', emoji: '🍮', name: 'Desserts & Glaces',       desc: 'Churros loaded, dulce de leche, mousse maracuja',               from: '6,90€'  },
 ]
-
-// ─── Horaires data ────────────────────────────────────────────────────────────
 
 const horaires = [
-  { jours: 'Mardi – Jeudi', midi: '12h – 14h', soir: '19h – 22h30', fermé: false },
-  { jours: 'Vendredi & Sam.', midi: '12h – 14h', soir: '19h – 23h30', fermé: false },
-  { jours: 'Dimanche', midi: '12h – 15h', soir: 'Brunch', fermé: false },
-  { jours: 'Lundi', midi: '—', soir: 'Fermé', fermé: true },
+  { jours: 'Mardi – Jeudi',    midi: '12h – 14h', soir: '19h – 22h30', fermé: false },
+  { jours: 'Vendredi & Sam.',  midi: '12h – 14h', soir: '19h – 23h30', fermé: false },
+  { jours: 'Dimanche',         midi: '12h – 15h', soir: 'Brunch 🥑',   fermé: false },
+  { jours: 'Lundi',            midi: '—',          soir: 'Fermé',       fermé: true  },
 ]
 
-// ─── Decorative dot pattern SVG ─────────────────────────────────────────────
+const stats = [
+  { value: '6',   label: 'Catégories de plats' },
+  { value: '50+', label: 'Plats à la carte'    },
+  { value: '12h', label: 'Cuisson effiloché'   },
+  { value: '100%', label: 'Fait maison'         },
+]
 
-function DotPattern({ opacity = 0.08 }: { opacity?: number }) {
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <pattern id="dots" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-          <circle cx="2" cy="2" r="2" fill="white" opacity={opacity} />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#dots)" />
-    </svg>
-  )
+/* ─────────────── FLOATING PARTICLE ─────────────── */
+function Particle({ style }: { style: React.CSSProperties }) {
+  return <div className="absolute rounded-full pointer-events-none" style={style} />
 }
 
-// ─── Floating decorative circles ────────────────────────────────────────────
-
-function FloatingCircles() {
+/* ─────────────── COUNTER ANIMATION ─────────────── */
+function AnimatedCounter({ value, label }: { value: string; label: string }) {
+  const [visible, setVisible] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current; if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold: 0.5 })
+    obs.observe(el); return () => obs.disconnect()
+  }, [])
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div ref={ref} className="text-center group">
       <div
-        className="absolute rounded-full"
-        style={{
-          width: 320,
-          height: 320,
-          top: '10%',
-          left: '-8%',
-          background: 'radial-gradient(circle, rgba(240,126,44,0.18) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 420,
-          height: 420,
-          bottom: '5%',
-          right: '-10%',
-          background: 'radial-gradient(circle, rgba(132,73,153,0.2) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 200,
-          height: 200,
-          top: '40%',
-          right: '15%',
-          background: 'radial-gradient(circle, rgba(252,234,91,0.12) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 150,
-          height: 150,
-          top: '20%',
-          right: '30%',
-          background: 'radial-gradient(circle, rgba(25,169,91,0.1) 0%, transparent 70%)',
-        }}
-      />
+        className={`font-bernier text-5xl md:text-6xl text-flor transition-all duration-700 ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
+        style={{ textShadow: '0 0 30px rgba(240,126,44,0.5)' }}
+      >
+        {value}
+      </div>
+      <div className="font-fjalla tracking-widest uppercase text-xs text-tortilla/70 mt-1">{label}</div>
     </div>
   )
 }
 
-// ─── Page component ──────────────────────────────────────────────────────────
+/* ─────────────── ORNAMENT SVG ─────────────── */
+function Ornament({ color = '#F07E2C', className = '' }: { color?: string; className?: string }) {
+  return (
+    <svg width="120" height="20" viewBox="0 0 120 20" className={className} aria-hidden="true">
+      <line x1="0" y1="10" x2="42" y2="10" stroke={color} strokeWidth="1.5" />
+      <polygon points="40,6 48,10 40,14" fill={color} />
+      <circle cx="60" cy="10" r="4" fill={color} />
+      <polygon points="80,6 72,10 80,14" fill={color} />
+      <line x1="78" y1="10" x2="120" y2="10" stroke={color} strokeWidth="1.5" />
+    </svg>
+  )
+}
 
+/* ─────────────── MAIN PAGE ─────────────── */
 export default function HomePage() {
   const [heroVisible, setHeroVisible] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    // Trigger hero animation shortly after mount
-    const t = setTimeout(() => setHeroVisible(true), 80)
-    const handleScroll = () => setScrolled(window.scrollY > 60)
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      clearTimeout(t)
-      window.removeEventListener('scroll', handleScroll)
-    }
+    const t = setTimeout(() => setHeroVisible(true), 100)
+    const handleMouse = (e: MouseEvent) => setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })
+    window.addEventListener('mousemove', handleMouse)
+    return () => { clearTimeout(t); window.removeEventListener('mousemove', handleMouse) }
   }, [])
 
   return (
     <main className="overflow-x-hidden">
 
-      {/* ================================================================
-          1. HERO SECTION
-      ================================================================ */}
+      {/* ══════════════════════════════════════════
+          HERO — plein écran festif
+      ══════════════════════════════════════════ */}
       <section
-        id="hero"
-        className="relative min-h-screen flex flex-col"
-        style={{
-          background: 'linear-gradient(135deg, #541A24 0%, #6b2232 25%, #7a3060 55%, #844999 100%)',
-        }}
+        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+        style={{ background: 'linear-gradient(145deg, #541A24 0%, #6e1e2f 20%, #7a3060 55%, #5a2470 80%, #3a1550 100%)' }}
       >
-        {/* Dot pattern overlay */}
-        <DotPattern opacity={0.06} />
+        {/* Parallax gradient orbs who follow mouse */}
+        <div
+          className="absolute rounded-full pointer-events-none transition-transform duration-1000"
+          style={{
+            width: 600, height: 600,
+            background: 'radial-gradient(circle, rgba(240,126,44,0.18) 0%, transparent 70%)',
+            top: '10%', left: '-10%',
+            transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 20}px)`,
+          }}
+        />
+        <div
+          className="absolute rounded-full pointer-events-none transition-transform duration-700"
+          style={{
+            width: 500, height: 500,
+            background: 'radial-gradient(circle, rgba(132,73,153,0.2) 0%, transparent 70%)',
+            bottom: '5%', right: '-8%',
+            transform: `translate(${-mousePos.x * 25}px, ${-mousePos.y * 15}px)`,
+          }}
+        />
+        <div
+          className="absolute rounded-full pointer-events-none transition-transform duration-500"
+          style={{
+            width: 300, height: 300,
+            background: 'radial-gradient(circle, rgba(252,234,91,0.1) 0%, transparent 70%)',
+            top: '45%', right: '20%',
+            transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 10}px)`,
+          }}
+        />
 
-        {/* Floating gradient blobs */}
-        <FloatingCircles />
-
-        {/* Extra decorative SVG arcs */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          aria-hidden="true"
-          style={{ opacity: 0.07 }}
-        >
-          <circle cx="80%" cy="20%" r="180" fill="none" stroke="#FCEA5B" strokeWidth="1.5" />
-          <circle cx="80%" cy="20%" r="220" fill="none" stroke="#FCEA5B" strokeWidth="0.8" />
-          <circle cx="12%" cy="75%" r="140" fill="none" stroke="#F07E2C" strokeWidth="1.5" />
-          <circle cx="12%" cy="75%" r="180" fill="none" stroke="#F07E2C" strokeWidth="0.8" />
+        {/* Dot grid overlay */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-5" aria-hidden="true">
+          <defs>
+            <pattern id="dotgrid" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="white" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dotgrid)" />
         </svg>
 
-        {/* Papel Picado banner */}
-        <div className="relative z-10 w-full">
+        {/* Decorative rings */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" style={{ opacity: 0.06 }}>
+          <circle cx="85%" cy="15%" r="200" fill="none" stroke="#FCEA5B" strokeWidth="1" />
+          <circle cx="85%" cy="15%" r="260" fill="none" stroke="#FCEA5B" strokeWidth="0.5" />
+          <circle cx="10%" cy="80%" r="160" fill="none" stroke="#F07E2C" strokeWidth="1" />
+          <circle cx="10%" cy="80%" r="220" fill="none" stroke="#F07E2C" strokeWidth="0.5" />
+          <circle cx="50%" cy="50%" r="380" fill="none" stroke="#844999" strokeWidth="0.5" />
+        </svg>
+
+        {/* Papel Picado en haut */}
+        <div className="absolute top-0 w-full z-10 pt-16">
           <PapelPicado />
         </div>
 
-        {/* Floating SVG decorations */}
-        <div className="absolute left-4 md:left-12 top-28 md:top-36 z-10 opacity-80">
-          <Cactus size={90} className="drop-shadow-lg" />
-        </div>
-        <div className="absolute right-6 md:right-16 top-32 md:top-40 z-10 opacity-75">
-          <MilagroHeart size={80} animated className="drop-shadow-lg" />
-        </div>
-        <div className="absolute left-8 md:left-20 bottom-32 z-10 opacity-70">
-          <ChiliRow count={4} className="drop-shadow" />
-        </div>
-        <div className="absolute right-4 md:right-24 bottom-40 z-10 opacity-70">
-          <Sun size={64} color="#FCEA5B" />
-        </div>
-        <div className="absolute left-[48%] top-24 z-10 opacity-40">
-          <MilagroHeart size={40} />
-        </div>
-        <div className="absolute right-[42%] bottom-28 z-10 opacity-40">
-          <Sun size={36} color="#F07E2C" />
+        {/* Floating decorative elements */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute left-6 top-1/3 animate-float" style={{ animationDuration: '4s' }}>
+            <Cactus size={90} />
+          </div>
+          <div className="absolute right-8 top-1/4 animate-float" style={{ animationDuration: '5s', animationDelay: '1s' }}>
+            <Calavera size={80} />
+          </div>
+          <div className="absolute left-1/4 bottom-32 animate-sway hidden md:block" style={{ animationDuration: '3s' }}>
+            <ChiliRow count={3} />
+          </div>
+          <div className="absolute right-1/4 bottom-24 animate-float" style={{ animationDuration: '6s', animationDelay: '0.5s' }}>
+            <svg width="50" height="50" viewBox="0 0 50 50" aria-hidden="true">
+              {[0,45,90,135,180,225,270,315].map((a,i) => (
+                <line key={i} x1={25+14*Math.cos(a*Math.PI/180)} y1={25+14*Math.sin(a*Math.PI/180)}
+                  x2={25+22*Math.cos(a*Math.PI/180)} y2={25+22*Math.sin(a*Math.PI/180)}
+                  stroke="#FFAB03" strokeWidth={i%2===0?2:1} opacity="0.8"/>
+              ))}
+              <circle cx="25" cy="25" r="10" fill="#FFAB03" opacity="0.5"/>
+            </svg>
+          </div>
+          {/* Sparkles */}
+          {[
+            { top:'15%', left:'15%', color:'#FCEA5B', size:8, delay:'0s' },
+            { top:'25%', right:'12%', color:'#F07E2C', size:6, delay:'0.7s' },
+            { top:'60%', left:'8%',  color:'#F23376', size:5, delay:'1.2s' },
+            { top:'70%', right:'15%',color:'#7BCCC0', size:7, delay:'0.3s' },
+            { top:'40%', left:'40%', color:'#FFAB03', size:4, delay:'0.9s' },
+          ].map((s, i) => (
+            <div
+              key={i}
+              className="absolute animate-pulse"
+              style={{ top: s.top, left: (s as any).left, right: (s as any).right, animationDelay: s.delay, animationDuration: '2s' }}
+            >
+              <svg width={s.size*3} height={s.size*3} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2 L13.5 10.5 L22 12 L13.5 13.5 L12 22 L10.5 13.5 L2 12 L10.5 10.5 Z"
+                  fill={s.color} opacity="0.8"/>
+              </svg>
+            </div>
+          ))}
         </div>
 
-        {/* Hero center content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pb-20 text-center">
-          {/* Logo */}
+        {/* ── CONTENU CENTRAL HERO ── */}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 pt-24 pb-16">
+
+          {/* VRAI LOGO avec effet détouré */}
           <div
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(40px)',
-              transition: 'opacity 0.9s ease, transform 0.9s ease',
-            }}
+            className={`transition-all duration-1000 ease-out ${heroVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-8'}`}
+            style={{ transitionDelay: '0ms' }}
           >
-            <LogoCantina variant="white" width={320} className="drop-shadow-2xl" />
+            <div className="relative inline-block">
+              {/* Filtre SVG pour supprimer le fond blanc du PNG */}
+              <svg width="0" height="0" style={{ position: 'absolute' }}>
+                <defs>
+                  <filter id="remove-white" colorInterpolationFilters="sRGB">
+                    <feColorMatrix
+                      type="matrix"
+                      values="1 0 0 0 0
+                              0 1 0 0 0
+                              0 0 1 0 0
+                             -8 -8 -8 12 0"
+                    />
+                  </filter>
+                </defs>
+              </svg>
+              {/* Halo animé */}
+              <div
+                className="absolute inset-0 blur-3xl animate-pulse-glow pointer-events-none"
+                style={{ background: 'radial-gradient(circle, rgba(240,126,44,0.4) 0%, transparent 70%)', transform: 'scale(1.8)' }}
+              />
+              <Image
+                src="/logo.png"
+                alt="La Cantina — Brasserie Latina"
+                width={420}
+                height={260}
+                priority
+                className="relative max-w-[300px] md:max-w-[420px]"
+                style={{ filter: 'url(#remove-white) drop-shadow(0 4px 24px rgba(240,126,44,0.4))' }}
+              />
+            </div>
           </div>
 
           {/* Tagline */}
           <div
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(30px)',
-              transition: 'opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s',
-            }}
+            className={`mt-4 transition-all duration-800 ease-out ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+            style={{ transitionDelay: '300ms' }}
           >
-            <h1
-              className="font-bernier mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
-              style={{
-                color: '#FCEA5B',
-                textShadow: '0 4px 24px rgba(0,0,0,0.5), 2px 2px 0 #541A24',
-              }}
-            >
-              ¡Bienvenidos<br className="hidden sm:block" /> a La Cantina!
+            <Ornament color="rgba(255,171,3,0.8)" className="mx-auto mb-3" />
+            <h1 className="font-bernier text-4xl sm:text-5xl md:text-6xl text-amarillo leading-tight"
+              style={{ textShadow: '3px 3px 0 rgba(0,0,0,0.4), 0 0 40px rgba(252,234,91,0.3)' }}>
+              ¡Bienvenidos!
             </h1>
-          </div>
-
-          {/* Subtitle */}
-          <div
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.9s ease 0.38s, transform 0.9s ease 0.38s',
-            }}
-          >
-            <p
-              className="font-fjalla tracking-widest uppercase text-lg md:text-xl mt-4"
-              style={{ color: '#EFDFC6', letterSpacing: '0.25em' }}
-            >
+            <p className="font-fjalla tracking-[0.25em] uppercase text-tortilla/80 text-sm mt-2 md:text-base">
               Brasserie Latina — La Roche-sur-Yon
             </p>
           </div>
 
-          {/* ChiliRow separator */}
+          {/* Sous-titre */}
           <div
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transition: 'opacity 0.9s ease 0.5s',
-            }}
+            className={`mt-3 transition-all duration-800 ease-out ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            style={{ transitionDelay: '500ms' }}
           >
-            <ChiliRow count={7} className="mt-4 justify-center" />
+            <p className="font-futura text-tortilla/70 text-sm max-w-lg mx-auto leading-relaxed">
+              Un voyage culinaire entre le Mexique et l'Amérique du Sud.<br />
+              Saveurs vibrantes, partage et convivialité.
+            </p>
           </div>
 
-          {/* CTA buttons */}
+          {/* CTAs */}
           <div
-            className="flex flex-wrap items-center justify-center gap-4 mt-8"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transform: heroVisible ? 'translateY(0)' : 'translateY(16px)',
-              transition: 'opacity 0.9s ease 0.6s, transform 0.9s ease 0.6s',
-            }}
+            className={`flex flex-col sm:flex-row gap-4 mt-8 transition-all duration-800 ease-out ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            style={{ transitionDelay: '700ms' }}
           >
-            <Button href="/carta" variant="primary" size="lg">
-              Découvrir la Carta
-            </Button>
-            <a
-              href="/reserver"
-              className="inline-flex items-center justify-center gap-2 font-fjalla tracking-widest uppercase rounded-full border-2 border-white text-white px-8 py-4 text-base hover:bg-white hover:text-cuir transition-all duration-200 hover:scale-105"
+            <Link
+              href="/carta"
+              className="group relative overflow-hidden bg-flor hover:bg-flor-dark text-white font-fjalla tracking-widest uppercase px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-orange-glow text-sm"
             >
-              Réserver
+              <span className="relative z-10">🌮 Découvrir la Carta</span>
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+            </Link>
+            <a
+              href="tel:0251000000"
+              className="group border-2 border-tortilla/60 hover:border-flor text-tortilla hover:text-flor font-fjalla tracking-widest uppercase px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 text-sm"
+            >
+              📞 Réserver une table
             </a>
           </div>
 
-          {/* Social icons */}
+          {/* Réseaux sociaux */}
           <div
-            className="flex items-center gap-5 mt-8"
-            style={{
-              opacity: heroVisible ? 1 : 0,
-              transition: 'opacity 0.9s ease 0.75s',
-            }}
+            className={`flex gap-3 mt-6 transition-all duration-800 ${heroVisible ? 'opacity-100' : 'opacity-0'}`}
+            style={{ transitionDelay: '900ms' }}
           >
             {[
-              { Icon: FaInstagram, href: '#', label: 'Instagram' },
-              { Icon: FaFacebookF, href: '#', label: 'Facebook' },
-              { Icon: FaTiktok, href: '#', label: 'TikTok' },
-            ].map(({ Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                aria-label={label}
-                className="w-10 h-10 rounded-full flex items-center justify-center border border-white/30 text-white/70 hover:text-white hover:border-white hover:bg-white/10 transition-all duration-200"
+              { icon: <FaInstagram />, label: 'Instagram', color: '#F23376' },
+              { icon: <FaFacebookF />, label: 'Facebook',  color: '#4280C7' },
+              { icon: <FaTiktok />,    label: 'TikTok',    color: '#7BCCC0' },
+            ].map(s => (
+              <a key={s.label} href="#" aria-label={s.label}
+                className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center text-white hover:scale-110 transition-all duration-200"
+                style={{ '--hover-bg': s.color } as any}
+                onMouseEnter={e => (e.currentTarget.style.background = s.color)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <Icon size={16} />
+                {s.icon}
               </a>
             ))}
           </div>
         </div>
 
         {/* Scroll indicator */}
-        <div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1"
-          style={{
-            opacity: scrolled ? 0 : heroVisible ? 0.7 : 0,
-            transition: 'opacity 0.5s ease',
-          }}
-        >
-          <span className="font-fjalla text-xs tracking-widest uppercase text-white/60">
-            Découvrir
-          </span>
-          <FaChevronDown
-            className="text-white/60 animate-bounce"
-            size={14}
-          />
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+          <FaChevronDown className="text-tortilla/40 text-xl" />
+        </div>
+
+        {/* Papel Picado inversé en bas */}
+        <div className="absolute bottom-0 w-full">
+          <PapelPicadoInverted />
         </div>
       </section>
 
-      {/* ================================================================
-          2. BIENVENUE SECTION
-      ================================================================ */}
-      <section
-        id="bienvenue"
-        className="relative overflow-hidden"
-        style={{ background: '#EFDFC6' }}
-      >
-        {/* Inverted Papel Picado */}
-        <PapelPicadoInverted />
+      {/* ══════════════════════════════════════════
+          STATS BAND
+      ══════════════════════════════════════════ */}
+      <section className="bg-cuir py-12 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+          <svg className="w-full h-full"><defs><pattern id="d2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="white"/></pattern></defs><rect width="100%" height="100%" fill="url(#d2)"/></svg>
+        </div>
+        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {stats.map(s => <AnimatedCounter key={s.label} value={s.value} label={s.label} />)}
+        </div>
+      </section>
 
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <div
-            className="absolute rounded-full"
-            style={{
-              width: 500,
-              height: 500,
-              top: '-10%',
-              right: '-8%',
-              background: 'radial-gradient(circle, rgba(240,126,44,0.08) 0%, transparent 70%)',
-            }}
-          />
-          <div
-            className="absolute rounded-full"
-            style={{
-              width: 350,
-              height: 350,
-              bottom: '-5%',
-              left: '-5%',
-              background: 'radial-gradient(circle, rgba(132,73,153,0.07) 0%, transparent 70%)',
-            }}
-          />
+      {/* ══════════════════════════════════════════
+          BIENVENUE
+      ══════════════════════════════════════════ */}
+      <section className="relative py-24 bg-tortilla overflow-hidden">
+        {/* Decorative bg text */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+          <span className="font-bernier text-[18rem] text-cuir opacity-[0.03] select-none leading-none whitespace-nowrap">CANTINA</span>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-20 md:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-
-            {/* Left column */}
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <AnimatedSection animation="slide-left">
               <SectionTitle
-                eyebrow="¡Descubre!"
-                title="Bienvenue à La Cantina"
+                eyebrow="¡Bienvenidos!"
+                title="Une Brasserie au Cœur Vibrant"
+                subtitle="Bienvenue dans un lieu où chaque plat est une histoire, chaque bouchée un voyage. La Cantina, c'est l'âme du Mexique et de l'Amérique du Sud réunie dans votre assiette."
                 align="left"
               />
-              <p
-                className="font-futura text-base md:text-lg leading-relaxed mt-6"
-                style={{ color: '#541A24', opacity: 0.85 }}
-              >
-                Bienvenue à La Cantina — un lieu vibrant où les saveurs du Mexique et
-                d&apos;Amérique du Sud se rencontrent. Guacamole fait minute, bœuf effiloché
-                12 heures, tortillas pressées à la main&hellip;
-              </p>
-              <p
-                className="font-futura text-base md:text-lg leading-relaxed mt-4"
-                style={{ color: '#541A24', opacity: 0.75 }}
-              >
-                Ici, chaque plat est une invitation au voyage. Nos recettes s&apos;inspirent
-                des marchés de Mexico, des plages de Rio et des saveurs pimentées d&apos;Oaxaca.
-                Une cuisine généreuse, authentique, festive.
-              </p>
-
-              {/* Feature pills */}
-              <div className="flex flex-wrap gap-3 mt-8">
-                {[
-                  { label: 'Fait Maison', color: '#FF461C' },
-                  { label: 'Produits Frais', color: '#19A95B' },
-                  { label: '100% Saveurs', color: '#4280C7' },
-                  { label: 'Ambiance Unique', color: '#844999' },
-                ].map(({ label, color }) => (
-                  <span
-                    key={label}
-                    className="font-fjalla text-xs tracking-widest uppercase px-4 py-2 rounded-full text-white"
-                    style={{ background: color }}
-                  >
-                    {label}
-                  </span>
-                ))}
-              </div>
-
-              <div className="mt-8">
-                <Button href="/la-cantina" variant="primary" size="md">
-                  Notre Histoire
-                </Button>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <Link href="/historia"
+                  className="inline-flex items-center gap-2 bg-cuir hover:bg-cuir-light text-white font-fjalla tracking-widest uppercase px-7 py-3.5 rounded-full transition-all hover:scale-105 text-sm shadow-festive">
+                  Notre Histoire ›
+                </Link>
+                <Link href="/carta"
+                  className="inline-flex items-center gap-2 border-2 border-flor text-flor hover:bg-flor hover:text-white font-fjalla tracking-widest uppercase px-7 py-3.5 rounded-full transition-all hover:scale-105 text-sm">
+                  La Carta ›
+                </Link>
               </div>
             </AnimatedSection>
 
-            {/* Right column — decorative quote card */}
-            <AnimatedSection animation="slide-right" delay={150}>
-              <div className="relative">
-                {/* Main card */}
-                <div
-                  className="relative rounded-3xl p-8 md:p-10 overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, #541A24 0%, #844999 100%)',
-                    boxShadow: '0 24px 80px rgba(84,26,36,0.35)',
-                  }}
+            <AnimatedSection animation="slide-right" className="grid grid-cols-2 gap-4">
+              {[
+                { bg: '#F07E2C', icon: '🫙', title: 'Guacamole Minute',  text: 'Préparé devant vous, à la commande' },
+                { bg: '#844999', icon: '🥩', title: 'Effiloché 12h',     text: 'Bœuf ou porc mijoté lentement' },
+                { bg: '#19A95B', icon: '🌮', title: 'Tortillas Maison',  text: 'Pressées à la main chaque matin' },
+                { bg: '#F23376', icon: '🍹', title: 'Margaritas',        text: "Préparées à l'instant, chaque soir" },
+              ].map((c, i) => (
+                <AnimatedSection key={c.title} animation="fade-up" delay={i * 80}
+                  className="rounded-2xl p-5 text-white hover-lift cursor-default"
+                  style={{ background: c.bg }}
                 >
-                  <DotPattern opacity={0.05} />
-
-                  {/* Corner suns */}
-                  <div className="absolute top-4 right-4 opacity-30">
-                    <Sun size={48} color="#FCEA5B" />
-                  </div>
-                  <div className="absolute bottom-4 left-4 opacity-20">
-                    <Sun size={36} color="#F07E2C" />
-                  </div>
-
-                  {/* Quote mark */}
-                  <div
-                    className="font-bernier text-8xl leading-none mb-2"
-                    style={{ color: '#F07E2C', opacity: 0.5 }}
-                    aria-hidden="true"
-                  >
-                    &ldquo;
-                  </div>
-                  <blockquote
-                    className="font-bernier text-2xl md:text-3xl leading-snug"
-                    style={{
-                      color: '#FCEA5B',
-                      textShadow: '1px 1px 0 rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    La cuisine, c&apos;est l&apos;amour, l&apos;amitié et la familia.
-                  </blockquote>
-                  <p
-                    className="font-fjalla tracking-widest uppercase text-sm mt-4"
-                    style={{ color: '#EFDFC6', opacity: 0.7 }}
-                  >
-                    — El Chef de La Cantina
-                  </p>
-
-                  <div className="mt-6 pt-6 border-t border-white/10">
-                    <ChiliRow count={6} />
-                  </div>
-                </div>
-
-                {/* Floating heart badge */}
-                <div
-                  className="absolute -top-6 -left-6 rounded-2xl p-3"
-                  style={{
-                    background: '#FFAB03',
-                    boxShadow: '0 8px 24px rgba(255,171,3,0.4)',
-                    transform: 'rotate(-8deg)',
-                  }}
-                >
-                  <MilagroHeart size={52} />
-                </div>
-
-                {/* Cactus badge */}
-                <div
-                  className="absolute -bottom-4 -right-4 rounded-2xl p-2"
-                  style={{
-                    background: '#19A95B',
-                    boxShadow: '0 8px 24px rgba(25,169,91,0.4)',
-                    transform: 'rotate(6deg)',
-                  }}
-                >
-                  <Cactus size={52} />
-                </div>
-              </div>
+                  <div className="text-3xl mb-2">{c.icon}</div>
+                  <div className="font-fjalla text-sm tracking-wide">{c.title}</div>
+                  <div className="font-futura text-xs opacity-80 mt-1 leading-snug">{c.text}</div>
+                </AnimatedSection>
+              ))}
             </AnimatedSection>
-
           </div>
         </div>
-
-        <SunDivider />
       </section>
 
-      {/* ================================================================
-          3. NOS SPÉCIALITÉS SECTION
-      ================================================================ */}
-      <section id="specialites" className="relative bg-white py-20 md:py-28 overflow-hidden">
+      {/* ══════════════════════════════════════════
+          SPÉCIALITÉS
+      ══════════════════════════════════════════ */}
+      <section className="relative py-24 bg-white overflow-hidden">
+        <PapelPicado className="mb-0" />
+        <div className="max-w-7xl mx-auto px-6 pt-8">
+          <AnimatedSection animation="fade-up" className="text-center mb-14">
+            <SectionTitle eyebrow="Ce qu'on vous prépare" title="Nos Spécialités" align="center" />
+          </AnimatedSection>
 
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 6,
-              background: 'linear-gradient(90deg, #FF461C, #FFAB03, #19A95B, #4280C7, #F23376, #844999)',
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
-          <SectionTitle
-            eyebrow="¡Delicioso!"
-            title="Nos Spécialités"
-            subtitle="Des saveurs authentiques qui voyagent de Mexico à Buenos Aires"
-          />
-
-          {/* Cards grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-14">
-            {specialites.map((item, i) => (
-              <AnimatedSection
-                key={item.name}
-                animation="fade-up"
-                delay={i * 80}
-              >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {specialites.map((s, i) => (
+              <AnimatedSection key={s.name} animation="fade-up" delay={i * 80}>
                 <div
-                  className="group relative rounded-2xl md:rounded-3xl p-6 md:p-8 overflow-hidden cursor-pointer"
-                  style={{
-                    background: item.bg,
-                    boxShadow: `0 8px 32px ${item.shadow}`,
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget
-                    el.style.transform = 'scale(1.04) translateY(-4px)'
-                    el.style.boxShadow = `0 20px 48px ${item.shadow}`
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget
-                    el.style.transform = 'scale(1) translateY(0)'
-                    el.style.boxShadow = `0 8px 32px ${item.shadow}`
-                  }}
+                  className="relative rounded-3xl p-8 text-white overflow-hidden group hover-lift cursor-default"
+                  style={{ background: s.bg, boxShadow: `0 8px 32px ${s.bg}55` }}
                 >
-                  {/* Dot pattern */}
-                  <DotPattern opacity={0.08} />
+                  {/* Déco cercle en fond */}
+                  <div className="absolute -bottom-8 -right-8 w-36 h-36 rounded-full bg-black opacity-10 group-hover:scale-125 transition-transform duration-500" />
+                  <div className="absolute top-4 right-4 text-4xl opacity-20 font-bernier">{String(i+1).padStart(2,'0')}</div>
 
-                  {/* Decorative circle bg */}
-                  <div
-                    className="absolute -top-4 -right-4 rounded-full"
-                    style={{
-                      width: 100,
-                      height: 100,
-                      background: 'rgba(255,255,255,0.1)',
-                    }}
-                    aria-hidden="true"
-                  />
-
-                  {/* Emoji */}
-                  <div
-                    className="text-4xl md:text-5xl mb-4 leading-none relative z-10"
-                    aria-hidden="true"
-                  >
-                    {item.emoji}
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">{s.emoji}</div>
+                  <h3 className="font-fjalla text-xl tracking-wide mb-2">{s.name}</h3>
+                  <p className="font-futura text-sm opacity-85 leading-relaxed mb-4">{s.desc}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="font-fjalla text-xs tracking-widest uppercase opacity-70">À partir de</span>
+                    <span className="font-bernier text-2xl">{s.from}</span>
                   </div>
-
-                  {/* Name */}
-                  <h3
-                    className="font-bernier text-lg md:text-xl leading-tight text-white relative z-10"
-                    style={{ textShadow: '1px 1px 0 rgba(0,0,0,0.2)' }}
-                  >
-                    {item.name}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="font-futura text-xs md:text-sm text-white/80 mt-2 leading-relaxed relative z-10">
-                    {item.desc}
-                  </p>
-
-                  {/* Arrow indicator */}
-                  <div
-                    className="mt-4 w-8 h-8 rounded-full flex items-center justify-center relative z-10"
-                    style={{ background: 'rgba(255,255,255,0.2)' }}
-                  >
-                    <span className="text-white text-sm font-bold">→</span>
-                  </div>
+                  <Link href="/carta"
+                    className="mt-4 inline-block font-fjalla text-xs tracking-widest uppercase bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-all">
+                    Voir la carte →
+                  </Link>
                 </div>
               </AnimatedSection>
             ))}
           </div>
-
-          {/* CTA */}
-          <AnimatedSection animation="fade-up" delay={200}>
-            <div className="flex justify-center mt-12">
-              <Button href="/carta" variant="primary" size="lg">
-                Voir Toute la Carta →
-              </Button>
-            </div>
-          </AnimatedSection>
         </div>
+        <PapelPicadoInverted className="mt-8" />
       </section>
 
-      {/* ================================================================
-          4. AMBIANCE SECTION
-      ================================================================ */}
+      {/* ══════════════════════════════════════════
+          AMBIANCE BAND
+      ══════════════════════════════════════════ */}
       <section
-        id="ambiance"
-        className="relative py-24 md:py-36 overflow-hidden"
-        style={{
-          background:
-            'linear-gradient(135deg, #FF461C 0%, #F07E2C 20%, #FFAB03 38%, #19A95B 55%, #4280C7 72%, #844999 88%, #F23376 100%)',
-        }}
+        className="relative py-24 overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #FF461C 0%, #F07E2C 30%, #FFAB03 60%, #FCEA5B 100%)' }}
       >
-        <DotPattern opacity={0.07} />
-
-        {/* Large blurred colour blobs for depth */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          <div
-            className="absolute rounded-full blur-3xl"
-            style={{
-              width: 600,
-              height: 600,
-              top: '-20%',
-              left: '-10%',
-              background: 'rgba(255,255,255,0.08)',
-            }}
-          />
-          <div
-            className="absolute rounded-full blur-3xl"
-            style={{
-              width: 500,
-              height: 500,
-              bottom: '-15%',
-              right: '-8%',
-              background: 'rgba(0,0,0,0.08)',
-            }}
-          />
+        {/* Animated diagonal stripes */}
+        <div className="absolute inset-0 overflow-hidden opacity-10 pointer-events-none">
+          {[0,1,2,3,4].map(i => (
+            <div key={i} className="absolute h-full" style={{
+              width: '3px', background: '#fff',
+              left: `${10 + i*20}%`,
+              transform: 'skewX(-20deg)',
+              animation: `pulse ${1.5 + i*0.3}s ease-in-out infinite`,
+              animationDelay: `${i*0.2}s`
+            }}/>
+          ))}
         </div>
 
-        {/* Decorative suns */}
-        <div className="absolute top-8 left-8 opacity-30">
-          <Sun size={80} color="#FCEA5B" />
-        </div>
-        <div className="absolute top-12 right-12 opacity-25">
-          <Sun size={60} color="white" />
-        </div>
-        <div className="absolute bottom-8 left-1/4 opacity-20">
-          <Sun size={50} color="#FCEA5B" />
-        </div>
-        <div className="absolute bottom-10 right-1/3 opacity-25">
-          <Sun size={70} color="white" />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8 text-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           <AnimatedSection animation="fade-up">
-            <p
-              className="font-fjalla tracking-[0.3em] uppercase text-sm text-white/70 mb-4"
-            >
-              ¡La Experiencia!
-            </p>
-            <h2
-              className="font-bernier text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-white"
-              style={{ textShadow: '0 4px 32px rgba(0,0,0,0.3), 2px 2px 0 rgba(0,0,0,0.15)' }}
-            >
-              Un voyage culinaire entre Mexique et Amérique du Sud
+            <span className="font-fjalla tracking-[0.3em] uppercase text-cuir/70 text-sm">L'expérience Cantina</span>
+            <h2 className="font-bernier text-section text-cuir mt-2 leading-tight"
+              style={{ textShadow: '3px 3px 0 rgba(255,255,255,0.3)' }}>
+              Un Voyage Culinaire<br />Entre Deux Continents
             </h2>
-          </AnimatedSection>
-
-          <AnimatedSection animation="fade-up" delay={150}>
-            <p
-              className="font-bernier text-2xl md:text-3xl mt-6"
-              style={{
-                color: '#FCEA5B',
-                textShadow: '1px 1px 0 rgba(0,0,0,0.2)',
-              }}
-            >
-              ¡Cada bocado es un viaje!
+            <Ornament color="rgba(84,26,36,0.4)" className="mx-auto my-5" />
+            <p className="font-futura text-cuir/80 text-lg max-w-2xl mx-auto leading-relaxed">
+              La rigueur de la cuisine française rencontre l'âme vibrante de l'Amérique latine.
+              Des saveurs audacieuses, des recettes transmises de génération en génération,
+              et une ambiance qui fait danser vos papilles.
             </p>
-          </AnimatedSection>
-
-          {/* Feature pills */}
-          <AnimatedSection animation="fade-up" delay={280}>
-            <div className="flex flex-wrap justify-center gap-4 mt-10">
-              {[
-                { icon: '🎵', text: 'Musique latine live' },
-                { icon: '🌮', text: 'Cuisine authentique' },
-                { icon: '🎉', text: 'Ambiance festive' },
-              ].map(({ icon, text }) => (
-                <div
-                  key={text}
-                  className="flex items-center gap-3 px-6 py-3 rounded-full font-fjalla text-sm tracking-widest uppercase text-white"
-                  style={{
-                    background: 'rgba(255,255,255,0.15)',
-                    backdropFilter: 'blur(8px)',
-                    border: '1.5px solid rgba(255,255,255,0.3)',
-                  }}
-                >
-                  <span className="text-xl" aria-hidden="true">{icon}</span>
-                  {text}
-                </div>
+            <div className="flex flex-wrap justify-center gap-3 mt-8">
+              {['#MexicoCity', '#Sabor', '#FaitMaison', '#LaRocheSurYon', '#BrasseriLatina'].map(tag => (
+                <span key={tag} className="font-fjalla text-xs tracking-widest bg-cuir/10 text-cuir px-4 py-2 rounded-full border border-cuir/20">
+                  {tag}
+                </span>
               ))}
             </div>
           </AnimatedSection>
+        </div>
 
-          {/* Chili divider */}
-          <AnimatedSection animation="fade-up" delay={380}>
-            <div className="flex justify-center mt-10">
-              <ChiliRow count={9} />
-            </div>
-          </AnimatedSection>
-
-          {/* CTA */}
-          <AnimatedSection animation="fade-up" delay={460}>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <a
-                href="/reserver"
-                className="inline-flex items-center justify-center gap-2 font-fjalla tracking-widest uppercase rounded-full bg-white text-cuir px-8 py-4 text-sm hover:bg-amarillo transition-all duration-200 hover:scale-105 shadow-lg"
-                style={{ color: '#541A24' }}
-              >
-                🎉 Réserver une Table
-              </a>
-              <a
-                href="/carta"
-                className="inline-flex items-center justify-center gap-2 font-fjalla tracking-widest uppercase rounded-full border-2 border-white text-white px-8 py-4 text-sm hover:bg-white/10 transition-all duration-200 hover:scale-105"
-              >
-                🌮 Voir la Carta
-              </a>
-            </div>
-          </AnimatedSection>
+        {/* Decorative elements */}
+        <div className="absolute left-6 bottom-4 opacity-30 animate-sway" style={{ animationDuration: '4s' }}>
+          <ChiliRow count={4} />
+        </div>
+        <div className="absolute right-6 top-4 opacity-30 animate-float" style={{ animationDuration: '5s' }}>
+          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+            {[0,30,60,90,120,150,180,210,240,270,300,330].map((a,i) => (
+              <line key={i} x1={30+20*Math.cos(a*Math.PI/180)} y1={30+20*Math.sin(a*Math.PI/180)}
+                x2={30+28*Math.cos(a*Math.PI/180)} y2={30+28*Math.sin(a*Math.PI/180)}
+                stroke="#541A24" strokeWidth="2" opacity="0.5"/>
+            ))}
+            <circle cx="30" cy="30" r="14" fill="rgba(84,26,36,0.2)" stroke="#541A24" strokeWidth="1.5"/>
+          </svg>
         </div>
       </section>
 
-      {/* ================================================================
-          5. HORAIRES & INFOS SECTION
-      ================================================================ */}
-      <section
-        id="horaires"
-        className="relative py-20 md:py-28 overflow-hidden"
-        style={{ background: '#541A24' }}
-      >
-        <DotPattern opacity={0.05} />
-
-        {/* Background blobs */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <div
-            className="absolute rounded-full"
-            style={{
-              width: 400,
-              height: 400,
-              top: '-10%',
-              right: '-5%',
-              background: 'radial-gradient(circle, rgba(240,126,44,0.12) 0%, transparent 70%)',
-            }}
-          />
-          <div
-            className="absolute rounded-full"
-            style={{
-              width: 350,
-              height: 350,
-              bottom: '-8%',
-              left: '-4%',
-              background: 'radial-gradient(circle, rgba(132,73,153,0.1) 0%, transparent 70%)',
-            }}
-          />
+      {/* ══════════════════════════════════════════
+          HORAIRES
+      ══════════════════════════════════════════ */}
+      <section className="relative py-24 bg-cuir overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+          <svg className="w-full h-full"><defs><pattern id="d3" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.5" fill="white"/></pattern></defs><rect width="100%" height="100%" fill="url(#d3)"/></svg>
         </div>
+        {/* Big decorative circles */}
+        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full border border-flor opacity-10" />
+        <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full border border-violeta opacity-10" />
 
-        {/* Decorative corner sun */}
-        <div className="absolute top-8 right-8 opacity-15" aria-hidden="true">
-          <Sun size={100} color="#F07E2C" />
-        </div>
-        <div className="absolute bottom-8 left-8 opacity-10" aria-hidden="true">
-          <Sun size={80} color="#FCEA5B" />
-        </div>
+        <div className="relative z-10 max-w-5xl mx-auto px-6">
+          <AnimatedSection animation="fade-up" className="mb-14">
+            <SectionTitle eyebrow="On vous attend" title="Horaires & Infos" align="center" light />
+          </AnimatedSection>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
-          <SectionTitle
-            eyebrow="¡Venid!"
-            title="Horaires & Infos"
-            light={true}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mt-14">
-
-            {/* Left — Horaires */}
-            <AnimatedSection animation="slide-left" delay={100}>
-              <div
-                className="rounded-3xl overflow-hidden"
-                style={{ border: '2px solid rgba(240,126,44,0.3)' }}
-              >
-                {/* Header */}
-                <div
-                  className="px-6 py-4 flex items-center gap-3"
-                  style={{ background: 'rgba(240,126,44,0.15)' }}
-                >
-                  <FaClock style={{ color: '#F07E2C' }} size={18} />
-                  <span
-                    className="font-fjalla tracking-widest uppercase text-sm"
-                    style={{ color: '#F07E2C' }}
-                  >
-                    Nos Horaires d&apos;Ouverture
-                  </span>
-                </div>
-
-                {/* Rows */}
-                <div>
-                  {horaires.map((h, i) => (
-                    <div
-                      key={h.jours}
-                      className="flex items-center justify-between px-6 py-4"
-                      style={{
-                        background:
-                          h.fermé
-                            ? 'rgba(255,255,255,0.02)'
-                            : i % 2 === 0
-                            ? 'rgba(255,255,255,0.04)'
-                            : 'transparent',
-                        borderBottom:
-                          i < horaires.length - 1
-                            ? '1px solid rgba(240,126,44,0.12)'
-                            : 'none',
-                        opacity: h.fermé ? 0.45 : 1,
-                      }}
-                    >
-                      <span
-                        className="font-fjalla text-sm md:text-base"
-                        style={{ color: h.fermé ? '#EFDFC6' : '#FCEA5B' }}
-                      >
-                        {h.jours}
-                      </span>
-                      <div className="flex flex-col items-end gap-0.5">
-                        {h.fermé ? (
-                          <span
-                            className="font-futura text-sm italic"
-                            style={{ color: '#EFDFC6', opacity: 0.6 }}
-                          >
-                            Fermé
-                          </span>
-                        ) : (
-                          <>
-                            <span
-                              className="font-futura text-sm"
-                              style={{ color: '#EFDFC6' }}
-                            >
-                              {h.midi}
-                            </span>
-                            <span
-                              className="font-futura text-sm font-semibold"
-                              style={{ color: '#F07E2C' }}
-                            >
-                              {h.soir}
-                            </span>
-                          </>
-                        )}
-                      </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Horaires */}
+            <AnimatedSection animation="slide-left">
+              <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
+                <h3 className="font-fjalla text-flor tracking-widest uppercase text-sm mb-6 flex items-center gap-2">
+                  <span className="w-6 h-0.5 bg-flor inline-block" /> Horaires d'ouverture
+                </h3>
+                <div className="space-y-3">
+                  {horaires.map(h => (
+                    <div key={h.jours} className={`flex items-center justify-between py-3 px-4 rounded-xl transition-all ${h.fermé ? 'bg-rojo/10' : 'bg-white/5 hover:bg-white/10'}`}>
+                      <span className={`font-futura text-sm ${h.fermé ? 'text-rojo' : 'text-tortilla'}`}>{h.jours}</span>
+                      {h.fermé
+                        ? <span className="font-fjalla text-rojo text-sm tracking-wide">Fermé</span>
+                        : <div className="text-right">
+                            <div className="font-fjalla text-xs text-flor">{h.midi}</div>
+                            <div className="font-fjalla text-xs text-amarillo">{h.soir}</div>
+                          </div>
+                      }
                     </div>
                   ))}
                 </div>
-
-                {/* Footer note */}
-                <div
-                  className="px-6 py-4 text-center"
-                  style={{ background: 'rgba(240,126,44,0.08)' }}
-                >
-                  <p
-                    className="font-futura text-xs italic"
-                    style={{ color: '#EFDFC6', opacity: 0.6 }}
-                  >
-                    Réservation recommandée le week-end
-                  </p>
-                </div>
               </div>
             </AnimatedSection>
 
-            {/* Right — Infos / Contact */}
-            <AnimatedSection animation="slide-right" delay={180}>
-              <div
-                className="rounded-3xl p-6 md:p-8 h-full flex flex-col justify-between"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '2px solid rgba(240,126,44,0.2)',
-                }}
-              >
-                <div>
-                  <h3
-                    className="font-bernier text-2xl mb-6"
-                    style={{ color: '#FCEA5B', textShadow: '1px 1px 0 rgba(0,0,0,0.3)' }}
-                  >
-                    Nous Trouver
-                  </h3>
-
-                  <div className="flex flex-col gap-5">
-                    {/* Address */}
-                    <div className="flex items-start gap-4">
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{ background: '#F07E2C' }}
-                      >
-                        <FaMapMarkerAlt size={14} className="text-white" />
-                      </div>
-                      <div>
-                        <p
-                          className="font-fjalla text-sm tracking-wider uppercase mb-1"
-                          style={{ color: '#F07E2C' }}
-                        >
-                          Adresse
-                        </p>
-                        <p className="font-futura text-sm leading-relaxed" style={{ color: '#EFDFC6' }}>
-                          La Cantina — Brasserie Latina<br />
-                          La Roche-sur-Yon, 85000<br />
-                          Vendée, France
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Phone */}
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: '#19A95B' }}
-                      >
-                        <FaPhone size={13} className="text-white" />
-                      </div>
-                      <div>
-                        <p
-                          className="font-fjalla text-sm tracking-wider uppercase mb-1"
-                          style={{ color: '#19A95B' }}
-                        >
-                          Téléphone
-                        </p>
-                        <a
-                          href="tel:+33251000000"
-                          className="font-futura text-sm hover:underline"
-                          style={{ color: '#EFDFC6' }}
-                        >
-                          02 51 00 00 00
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: '#4280C7' }}
-                      >
-                        <FaEnvelope size={13} className="text-white" />
-                      </div>
-                      <div>
-                        <p
-                          className="font-fjalla text-sm tracking-wider uppercase mb-1"
-                          style={{ color: '#4280C7' }}
-                        >
-                          Email
-                        </p>
-                        <a
-                          href="mailto:contact@lacantina.fr"
-                          className="font-futura text-sm hover:underline"
-                          style={{ color: '#EFDFC6' }}
-                        >
-                          contact@lacantina.fr
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CTA buttons */}
-                <div className="flex flex-wrap gap-3 mt-8">
-                  <a
-                    href="https://maps.google.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 font-fjalla tracking-widest uppercase rounded-full text-xs px-5 py-2.5 transition-all duration-200 hover:scale-105"
-                    style={{
-                      background: '#F07E2C',
-                      color: 'white',
-                      boxShadow: '0 4px 16px rgba(240,126,44,0.4)',
-                    }}
-                  >
-                    <FaMapMarkerAlt size={11} />
-                    Voir l&apos;Itinéraire
-                  </a>
-                  <a
-                    href="/reserver"
-                    className="inline-flex items-center gap-2 font-fjalla tracking-widest uppercase rounded-full border-2 border-white/30 text-white text-xs px-5 py-2.5 hover:bg-white/10 hover:border-white/60 transition-all duration-200 hover:scale-105"
-                  >
-                    Réserver
-                  </a>
-                </div>
+            {/* Infos contact */}
+            <AnimatedSection animation="slide-right" className="flex flex-col gap-4">
+              <div className="bg-flor rounded-3xl p-8 text-white relative overflow-hidden group hover-lift">
+                <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10 group-hover:scale-125 transition-transform duration-500"/>
+                <FaMapMarkerAlt className="text-2xl mb-3" />
+                <p className="font-fjalla text-lg tracking-wide">83 rue François Cévert</p>
+                <p className="font-futura text-sm opacity-80">85000 La Roche-sur-Yon</p>
+                <a href="https://maps.google.com/?q=83+rue+Francois+Cevert+85000+La+Roche-sur-Yon"
+                  target="_blank" rel="noopener noreferrer"
+                  className="inline-block mt-4 font-fjalla text-xs tracking-widest uppercase bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-all">
+                  Voir sur Maps →
+                </a>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-violeta rounded-2xl p-6 text-white relative overflow-hidden group hover-lift">
+                  <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-white/10 group-hover:scale-125 transition-transform duration-500"/>
+                  <FaPhone className="text-xl mb-2" />
+                  <a href="tel:0251000000" className="font-fjalla text-sm">02 51 XX XX XX</a>
+                </div>
+                <Link href="/eventos" className="bg-verde rounded-2xl p-6 text-white relative overflow-hidden group hover-lift">
+                  <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-white/10 group-hover:scale-125 transition-transform duration-500"/>
+                  <span className="text-xl block mb-2">🎉</span>
+                  <span className="font-fjalla text-sm">Événements</span>
+                </Link>
+              </div>
+              <Link href="/fiesta"
+                className="bg-amarillo rounded-2xl p-6 text-cuir relative overflow-hidden group hover-lift block">
+                <div className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-cuir/10 group-hover:scale-125 transition-transform duration-500"/>
+                <span className="text-xl block mb-2">🎊</span>
+                <span className="font-fjalla text-sm tracking-wide">Privatisation & Événements privés</span>
+                <span className="font-futura text-xs opacity-70 block mt-1">Jusqu'à 80 personnes</span>
+              </Link>
             </AnimatedSection>
-
           </div>
         </div>
+      </section>
 
-        {/* Bottom papel picado */}
-        <div className="relative z-10 mt-16">
-          <PapelPicado />
+      {/* ══════════════════════════════════════════
+          CTA FINAL
+      ══════════════════════════════════════════ */}
+      <section
+        className="relative py-24 text-center overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #844999 0%, #541A24 100%)' }}
+      >
+        <PapelPicado className="mb-0" />
+        <div className="relative z-10 max-w-3xl mx-auto px-6 py-8">
+          <AnimatedSection animation="fade-up">
+            <div className="text-5xl mb-4 animate-float">🌮</div>
+            <h2 className="font-bernier text-section text-white" style={{ textShadow: '3px 3px 0 rgba(0,0,0,0.3)' }}>
+              ¡La Mesa Te Espera!
+            </h2>
+            <p className="font-futura text-tortilla/80 mt-4 mb-8 text-lg max-w-xl mx-auto">
+              Réservez votre table et laissez-vous emporter par les saveurs de La Cantina.
+            </p>
+            <SunDivider className="my-6" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="tel:0251000000"
+                className="bg-flor hover:bg-flor-dark text-white font-fjalla tracking-widest uppercase px-10 py-4 rounded-full transition-all hover:scale-105 shadow-orange-glow text-sm">
+                📞 Appeler maintenant
+              </a>
+              <Link href="/contact"
+                className="border-2 border-tortilla/50 text-tortilla hover:bg-tortilla hover:text-cuir font-fjalla tracking-widest uppercase px-10 py-4 rounded-full transition-all hover:scale-105 text-sm">
+                ✉️ Nous écrire
+              </Link>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 

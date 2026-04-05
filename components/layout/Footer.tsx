@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import LogoCantina from '@/components/svg/LogoCantina'
+import Image from 'next/image'
 import PapelPicado from '@/components/svg/PapelPicado'
 import { FaInstagram, FaFacebook, FaTiktok } from 'react-icons/fa'
 
@@ -29,7 +29,7 @@ export default function Footer() {
 
           {/* Logo & tagline */}
           <div className="lg:col-span-1">
-            <LogoCantina variant="white" width={200} className="mb-4" />
+            <Image src="/logo.png" alt="La Cantina — Brasserie Latina" width={200} height={100} className="brightness-0 invert mb-4" />
             <p className="text-tortilla/70 font-futura text-sm leading-relaxed mt-3">
               Une brasserie vibrante dédiée aux saveurs du Mexique et de l'Amérique du Sud. Partage, convivialité, sabor.
             </p>
@@ -124,7 +124,7 @@ export default function Footer() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  42 Rue Georges Clemenceau<br />85000 La Roche-sur-Yon
+                  83 rue François Cévert<br />85000 La Roche-sur-Yon
                 </a>
               </li>
               <li>

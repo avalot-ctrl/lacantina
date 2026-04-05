@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button'
 export const metadata = {
   title: 'Notre Histoire',
   description:
-    "Découvrez l'histoire de La Cantina, née de la rencontre de Carlos et Elena à Oaxaca en 2018.",
+    "Découvrez l'histoire de La Cantina, née de la rencontre de Benjamin et Bianca à São Paulo en 2018.",
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -18,9 +18,9 @@ export const metadata = {
 const milestones = [
   {
     year: '2018',
-    label: 'Rencontre à Oaxaca',
+    label: 'Rencontre à São Paulo',
     description:
-      'Dans une cucina fumante du marché de Oaxaca, Carlos et Elena se croisent pour la première fois. Une soupe de maïs, un sourire, et le destin bascule.',
+      'Dans un marché vibrant de São Paulo, Benjamin — étudiant français en gastronomie — croise Bianca pour la première fois. Un plat de feijoada, un sourire, et le destin bascule.',
     dotColor: 'bg-violeta',
     cardBg: 'bg-violeta',
     textColor: 'text-white',
@@ -29,7 +29,7 @@ const milestones = [
     year: '2020',
     label: 'Retour en France, début du projet',
     description:
-      'De retour en Vendée, ils commencent à cuisiner ensemble dans la petite cuisine de Carlos. Les cahiers de recettes s\'accumulent. Le rêve prend forme.',
+      'De retour en Vendée, ils commencent à cuisiner ensemble — les techniques de Benjamin et les recettes de Vovó Maria côte à côte. Les cahiers s\'accumulent. Le rêve prend forme.',
     dotColor: 'bg-flor',
     cardBg: 'bg-flor',
     textColor: 'text-white',
@@ -38,7 +38,7 @@ const milestones = [
     year: '2024',
     label: 'Travaux et création de La Cantina',
     description:
-      'Pendant des mois, les murs se couvrent de couleurs éclatantes, les vitres taillées s\'inspirent de l\'art mexicain, et le cœur Milagro devient leur emblème.',
+      'Pendant des mois, les murs se couvrent de couleurs éclatantes, les vitraux s\'inspirent des fêtes brésiliennes et mexicaines, et le cœur Milagro devient leur emblème.',
     dotColor: 'bg-verde',
     cardBg: 'bg-verde',
     textColor: 'text-white',
@@ -47,7 +47,7 @@ const milestones = [
     year: '2025',
     label: 'Ouverture à La Roche-sur-Yon',
     description:
-      'Le 15 mars 2025, La Cantina ouvre ses portes. La file d\'attente s\'étend jusqu\'à la rue. Les premières larmes de joie coulent sur les joues d\'Elena.',
+      'Le 15 mars 2025, La Cantina ouvre ses portes. La file d\'attente s\'étend jusqu\'à la rue. Les premières larmes de joie coulent sur les joues de Bianca.',
     dotColor: 'bg-rojo',
     cardBg: 'bg-rojo',
     textColor: 'text-white',
@@ -106,7 +106,7 @@ export default function HistoriaPage() {
 
           <AnimatedSection animation="fade-up" delay={400}>
             <p className="font-futura text-white/85 text-lg md:text-2xl max-w-2xl leading-relaxed">
-              De Oaxaca à La Roche-sur-Yon,{' '}
+              De São Paulo à La Roche-sur-Yon,{' '}
               <em>une histoire d&apos;amour et de saveurs</em>
             </p>
           </AnimatedSection>
@@ -145,6 +145,7 @@ export default function HistoriaPage() {
             className="mb-16"
           />
 
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
             {/* Left – decorative card */}
@@ -172,7 +173,7 @@ export default function HistoriaPage() {
                     className="font-bernier text-amarillo leading-tight"
                     style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)' }}
                   >
-                    Oaxaca, Mexique
+                    São Paulo, Brésil
                   </p>
                 </div>
 
@@ -206,12 +207,13 @@ export default function HistoriaPage() {
                   <div className="w-1.5 flex-shrink-0 self-stretch rounded-full bg-gradient-to-b from-violeta via-flor to-verde" />
                   <div>
                     <h3 className="font-fjalla text-cuir text-xl uppercase tracking-widest mb-3">
-                      Carlos, Chef de Coeur
+                      Benjamin, Chef de Coeur
                     </h3>
                     <p className="font-futura text-cuir/80 leading-relaxed">
-                      Chef français formé dans les grandes brigades parisiennes, Carlos a toujours été
-                      fasciné par les cuissons lentes et les viandes maturées. Pour lui, cuisiner
-                      c&apos;est un acte de patience et d&apos;amour — jamais une course contre le temps.
+                      Chef français passionné de cuissons lentes et de viandes maturées, Benjamin a
+                      toujours cru que cuisiner est un acte de patience et d&apos;amour — jamais une
+                      course contre le temps. C&apos;est en partant étudier au Brésil qu&apos;il
+                      a découvert une autre façon de vivre la table.
                     </p>
                   </div>
                 </div>
@@ -220,13 +222,13 @@ export default function HistoriaPage() {
                   <div className="w-1.5 flex-shrink-0 self-stretch rounded-full bg-gradient-to-b from-rojo via-rosa to-naranja" />
                   <div>
                     <h3 className="font-fjalla text-cuir text-xl uppercase tracking-widest mb-3">
-                      Elena, L&apos;Âme du Mexique
+                      Bianca, L&apos;Âme du Brésil
                     </h3>
                     <p className="font-futura text-cuir/80 leading-relaxed">
-                      Originaire de Guadalajara, Elena a grandi dans la cuisine de son Abuelita Rosa.
-                      Chaque recette est un héritage transmis à voix basse, entre deux parfums de copal
-                      et le bruissement des tortillas sur la comal. Elle porte en elle la mémoire
-                      gustative de tout un peuple.
+                      Originaire de São Paulo, Bianca a grandi dans la cuisine de sa grand-mère,
+                      Vovó Maria. Chaque recette est un héritage transmis à voix basse, entre les
+                      parfums de cannelle et de coriandre, le chant des marmites sur le feu. Elle
+                      porte en elle la mémoire gustative de tout un peuple.
                     </p>
                   </div>
                 </div>
@@ -235,11 +237,11 @@ export default function HistoriaPage() {
                   className="bg-cuir/10 border-l-4 border-violeta rounded-r-2xl p-5 mt-2"
                 >
                   <p className="font-futura text-cuir/90 italic leading-relaxed">
-                    &ldquo;On s&apos;est retrouvés attablés face à face dans un marché de Oaxaca,
-                    une soupe de mais devant nous et le monde entier à inventer.&rdquo;
+                    &ldquo;On s&apos;est retrouvés attablés face à face dans un marché de São Paulo,
+                    une feijoada fumante devant nous et le monde entier à inventer.&rdquo;
                   </p>
                   <p className="font-fjalla text-flor tracking-widest uppercase text-xs mt-2">
-                    — Carlos &amp; Elena, 2018
+                    — Benjamin &amp; Bianca, 2018
                   </p>
                 </div>
               </div>
@@ -291,10 +293,10 @@ export default function HistoriaPage() {
 
           <AnimatedSection animation="fade-up" delay={350}>
             <p className="font-futura text-white/85 text-lg md:text-xl leading-relaxed mb-8">
-              De retour en France, Carlos et Elena rêvent d&apos;un endroit unique où la rigueur
+              De retour en France, Benjamin et Bianca rêvent d&apos;un endroit unique où la rigueur
               culinaire française rencontre l&apos;âme et les saveurs de l&apos;Amérique latine.
-              Un guacamole préparé à la minute. Un bœuf effiloché cuit douze heures durant.
-              Des tortillas pressées à la main chaque matin avant l&apos;ouverture.
+              Un plat de Vovó Maria revisité avec soin. Un bœuf effiloché cuit douze heures durant.
+              Des pains et des sauces préparés à la main chaque matin avant l&apos;ouverture.
             </p>
             <p className="font-futura text-white/75 text-lg leading-relaxed mb-14">
               Pas de compromis. Pas de shortcuts. Juste la vérité d&apos;un plat
@@ -360,7 +362,7 @@ export default function HistoriaPage() {
           <SectionTitle
             eyebrow="Chapitre III"
             title="Notre Aventure"
-            subtitle="De Oaxaca à La Roche-sur-Yon, les grandes étapes d'une belle folie"
+            subtitle="De São Paulo à La Roche-sur-Yon, les grandes étapes d'une belle folie"
             align="center"
             className="mb-20"
           />
@@ -620,7 +622,7 @@ export default function HistoriaPage() {
               chaque geste perpétue un savoir-faire, chaque table est une invitation au voyage.
             </p>
             <p className="font-futura text-white/60 leading-relaxed">
-              De Carlos et Elena à chaque membre de la brigade, nous portons ensemble
+              De Benjamin et Bianca à chaque membre de la brigade, nous portons ensemble
               l&apos;héritage de deux cultures. La Cantina, c&apos;est notre maison. La vôtre aussi.
             </p>
           </AnimatedSection>

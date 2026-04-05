@@ -15,7 +15,7 @@ const infoCards = [
   {
     icon: '📍',
     label: 'Adresse',
-    content: '42 Rue Georges Clemenceau\n85000 La Roche-sur-Yon',
+    content: '83 rue François Cévert\n85000 La Roche-sur-Yon',
     bg: 'bg-white border-2 border-flor',
     text: 'text-cuir',
     labelColor: 'text-flor',
