@@ -51,7 +51,9 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 hover:opacity-90 transition-opacity">
-              <Image src="/logo.png" alt="La Cantina — Brasserie Latina" width={160} height={80} style={{ filter: 'invert(1)', mixBlendMode: 'screen' }} />
+              <div style={{ mixBlendMode: 'screen', display: 'inline-block', lineHeight: 0 }}>
+                <Image src="/logo-detoure.png" alt="La Cantina — Brasserie Latina" width={160} height={120} style={{ display: 'block' }} />
+              </div>
             </Link>
 
             {/* Desktop Navigation */}

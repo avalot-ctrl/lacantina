@@ -29,7 +29,9 @@ export default function Footer() {
 
           {/* Logo & tagline */}
           <div className="lg:col-span-1">
-            <Image src="/logo.png" alt="La Cantina — Brasserie Latina" width={200} height={100} className="brightness-0 invert mb-4" />
+            <div style={{ mixBlendMode: 'screen', display: 'inline-block', lineHeight: 0 }}>
+              <Image src="/logo-detoure.png" alt="La Cantina — Brasserie Latina" width={220} height={165} style={{ display: 'block' }} className="mb-4" />
+            </div>
             <p className="text-tortilla/70 font-futura text-sm leading-relaxed mt-3">
               Une brasserie vibrante dédiée aux saveurs du Mexique et de l'Amérique du Sud. Partage, convivialité, sabor.
             </p>

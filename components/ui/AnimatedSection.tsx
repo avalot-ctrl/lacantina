@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from 'react'
 interface AnimatedSectionProps {
   children: React.ReactNode
   className?: string
+  style?: React.CSSProperties
   animation?: 'fade-up' | 'fade-in' | 'slide-left' | 'slide-right'
   delay?: number
   threshold?: number
@@ -13,6 +14,7 @@ interface AnimatedSectionProps {
 export default function AnimatedSection({
   children,
   className = '',
+  style,
   animation = 'fade-up',
   delay = 0,
   threshold = 0.15,
@@ -54,6 +56,7 @@ export default function AnimatedSection({
       ref={ref}
       className={className}
       style={{
+        ...style,
         ...baseStyle,
         ...(visible ? visibleStyle : hiddenStyles[animation]),
       }}

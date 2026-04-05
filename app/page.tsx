@@ -222,15 +222,17 @@ export default function HomePage() {
                 className="absolute inset-0 blur-3xl animate-pulse-glow pointer-events-none"
                 style={{ background: 'radial-gradient(circle, rgba(240,126,44,0.4) 0%, transparent 70%)', transform: 'scale(1.8)' }}
               />
-              <Image
-                src="/logo.png"
-                alt="La Cantina — Brasserie Latina"
-                width={420}
-                height={260}
-                priority
-                className="relative max-w-[300px] md:max-w-[420px]"
-                style={{ filter: 'url(#remove-white) drop-shadow(0 4px 24px rgba(240,126,44,0.4))' }}
-              />
+              {/* fond noir → transparent via screen blend, lignes blanches restent visibles */}
+              <div style={{ mixBlendMode: 'screen', display: 'inline-block', lineHeight: 0 }}>
+                <Image
+                  src="/logo-detoure.png"
+                  alt="La Cantina — Brasserie Latina"
+                  width={500}
+                  height={380}
+                  priority
+                  className="max-w-[320px] md:max-w-[500px] block"
+                />
+              </div>
             </div>
           </div>
 
